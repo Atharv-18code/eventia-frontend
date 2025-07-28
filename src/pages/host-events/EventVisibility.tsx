@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 const EventVisibility = ({ onNext, onBack, data, updateForm }) => {
   return (
-    <div className="w-[80%] h-[80vh] mx-auto my-6 p-6 bg-white rounded-xl shadow overflow-auto space-y-4">
+    <div className="w-[80%] h-[auto] mx-auto my-6 p-6 bg-white rounded-xl shadow overflow-auto space-y-4">
       <h2 className="text-2xl font-semibold">Event Visibility</h2>
 
       <RadioGroup

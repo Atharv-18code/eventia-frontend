@@ -9,7 +9,7 @@ const CreateEvent = ({ onNext, data, updateForm }) => {
   const handleChange = (e) => updateForm({ [e.target.name]: e.target.value });
 
   return (
-    <div className="w-[80%] h-[80vh] mx-auto my-6 p-6 bg-white rounded-xl shadow overflow-auto space-y-4">
+    <div className="w-[80%] h-[auto] mx-auto my-6 p-6 bg-white rounded-xl shadow overflow-auto space-y-4">
       <h2 className="text-2xl font-semibold">Create a New Event</h2>
 
       <div>
