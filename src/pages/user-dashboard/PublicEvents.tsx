@@ -31,8 +31,7 @@ const PublicEvents = () => {
                 <img
                   src={event.image}
                   alt={event.title}
-                  width={250}
-                  className='rounded-md'
+                  className='rounded-md w-[250px] h-[300px]'
                 />
               </CardHeader>
               <CardContent className='flex flex-col gap-2 justify-center items-center'>
