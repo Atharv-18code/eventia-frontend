@@ -6,7 +6,6 @@ import EventTicket from "./EventTicket";
 import toast from "react-hot-toast";
 import axiosInstance from "@/interceptors/AxiosInterceptor";
 
-
 // TicketPrice type
 type TicketPrice = {
   seatType: string;
