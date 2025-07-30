@@ -1,7 +1,7 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-const apiUrl = "http://localhost:3000/api/auth";
+const apiUrl = "http://localhost:3000";
 
 const axiosInstance = axios.create({
     baseURL: apiUrl,

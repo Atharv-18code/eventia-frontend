@@ -1,13 +1,8 @@
-'use client';
-
-import { useState,  } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Trash2 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Trash2 } from "lucide-react";
 
 type TicketPrice = {
   seatType: string;
@@ -15,19 +10,24 @@ type TicketPrice = {
   availableSeats: number;
 };
 
-const EventTicket = () => {
-  const navigate = useNavigate();
+interface EventTicketProps {
+  data: { ticketPrices: TicketPrice[] };
+  updateForm: (form: { ticketPrices: TicketPrice[] }) => void;
+  onBack: () => void;
+  onSubmit: () => void;
+}
 
-  // Initial one ticket input block
-  const [ticketPrices, setTicketPrices] = useState<TicketPrice[]>([
-    { seatType: '', price: 0, availableSeats: 0 },
-  ]);
+const EventTicket: React.FC<EventTicketProps> = ({ data, updateForm, onBack, onSubmit }) => {
+  const ticketPrices: TicketPrice[] = data.ticketPrices && data.ticketPrices.length > 0
+    ? data.ticketPrices
+    : [{ seatType: "", price: 0, availableSeats: 0 }];
 
   const handleAddTicket = () => {
-    setTicketPrices([
+    const updated = [
       ...ticketPrices,
-      { seatType: '', price: 0, availableSeats: 0 },
-    ]);
+      { seatType: "", price: 0, availableSeats: 0 },
+    ];
+    updateForm({ ticketPrices: updated });
   };
 
   const handleChange = (
@@ -39,38 +39,17 @@ const EventTicket = () => {
     updated[index] = {
       ...updated[index],
       [field]:
-        field === 'price' || field === 'availableSeats'
+        field === "price" || field === "availableSeats"
           ? parseInt(value) || 0
           : value,
     };
-    setTicketPrices(updated);
+    updateForm({ ticketPrices: updated });
   };
 
   const handleRemove = (index: number) => {
     const updated = [...ticketPrices];
     updated.splice(index, 1);
-    setTicketPrices(updated);
-  };
-
-  const handleSubmit = async () => {
-    try {
-      const eventData = { ticketPrices };
-
-      const res = await fetch('/api/events', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(eventData),
-      });
-
-      if (res.ok) {
-        toast.success('Event created successfully!');
-        navigate('/events/public');
-      } else {
-        toast.error('Failed to create event');
-      }
-    } catch {
-      toast.error('An error occurred');
-    }
+    updateForm({ ticketPrices: updated });
   };
 
   return (
@@ -82,9 +61,9 @@ const EventTicket = () => {
         </Button>
       </div>
 
-      <div className="flex flex-wrap gap-4 w-full md:w-[100%] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {ticketPrices.map((ticket, index) => (
-          <Card key={index} className="flex flex-wrap">
+          <Card key={index}>
             <CardContent className="p-4 space-y-2">
               <div>
                 <Label htmlFor={`seatType-${index}`}>Seat Type</Label>
@@ -92,7 +71,7 @@ const EventTicket = () => {
                   id={`seatType-${index}`}
                   value={ticket.seatType}
                   onChange={(e) =>
-                    handleChange(index, 'seatType', e.target.value)
+                    handleChange(index, "seatType", e.target.value)
                   }
                   placeholder="e.g. Balcony"
                 />
@@ -103,7 +82,7 @@ const EventTicket = () => {
                   id={`price-${index}`}
                   type="number"
                   value={ticket.price}
-                  onChange={(e) => handleChange(index, 'price', e.target.value)}
+                  onChange={(e) => handleChange(index, "price", e.target.value)}
                 />
               </div>
               <div>
@@ -115,7 +94,7 @@ const EventTicket = () => {
                   type="number"
                   value={ticket.availableSeats}
                   onChange={(e) =>
-                    handleChange(index, 'availableSeats', e.target.value)
+                    handleChange(index, "availableSeats", e.target.value)
                   }
                 />
               </div>
@@ -136,8 +115,11 @@ const EventTicket = () => {
         ))}
       </div>
 
-      <div className="flex justify-end mt-6">
-        <Button onClick={handleSubmit}>Submit & Finish</Button>
+      <div className="flex justify-between mt-6">
+        <Button variant="outline" onClick={onBack}>
+          Back
+        </Button>
+        <Button onClick={onSubmit}>Submit & Finish</Button>
       </div>
     </div>
   );

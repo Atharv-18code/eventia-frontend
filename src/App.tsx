@@ -25,7 +25,6 @@ import CreateEvent from "@/pages/host-events/CreateEvent";
 import EventDetail from "@/pages/host-events/EventDetail";
 import EventVisibility from "@/pages/host-events/EventVisibility";
 import EventTicket from "@/pages/host-events/EventTicket";
-import EventSubmit from "@/pages/host-events/EventSubmit";
 
 const AppRoutes = () => {
   const authenticated = useSelector(
@@ -86,10 +85,6 @@ const AppRoutes = () => {
                 {
                   path: "tickets",
                   element: <EventTicket />,
-                },
-                {
-                  path: "EventSubmit",
-                  element: <EventSubmit />,
                 },
               ],
             },

@@ -3,47 +3,86 @@ import CreateEvent from "./CreateEvent";
 import EventDetail from "./EventDetail";
 import EventVisibility from "./EventVisibility";
 import EventTicket from "./EventTicket";
-import EventSubmit from "./EventSubmit";
+import toast from "react-hot-toast";
+import axiosInstance from "@/interceptors/AxiosInterceptor";
+
+
+// TicketPrice type
+type TicketPrice = {
+  seatType: string;
+  price: number;
+  availableSeats: number;
+};
+
+// Form data structure
+type HostFormData = {
+  title?: string;
+  description?: string;
+  category?: string;
+  date?: string;
+  venueId?: string;
+  image?: File | null;
+  visibility?: string;
+  ticketPrices: TicketPrice[];
+};
 
 const HostEventWrapper = () => {
   const [step, setStep] = useState(0);
-  const [formData, setFormData] = useState({});
 
-  const updateForm = (fields) => {
+  const [formData, setFormData] = useState<HostFormData>({
+    ticketPrices: [{ seatType: "", price: 0, availableSeats: 0 }],
+  });
+
+  const updateForm = (fields: Partial<HostFormData>) => {
     setFormData((prev) => ({ ...prev, ...fields }));
   };
 
   const handleSubmit = async () => {
     const body = new FormData();
+
     Object.entries(formData).forEach(([key, value]) => {
       if (key === "image" && value) {
-        if (value instanceof Blob) {
-          body.append("image", value);
-        } else {
-          // If value is not a Blob/File, convert to string or handle error
-          body.append("image", String(value));
-        }
+        body.append("image", value as Blob);
       } else {
-        body.append(key, typeof value === "object" ? JSON.stringify(value) : String(value));
+        body.append(
+          key,
+          typeof value === "object" ? JSON.stringify(value) : String(value)
+        );
       }
     });
 
-    const res = await fetch("/api/events", {
-      method: "POST",
-      body,
-    });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axiosInstance.post("/api/events", body, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "Authorization": `Bearer ${token}`,
+        },
+      });
 
-    if (res.ok) {
-      alert("Event created successfully!");
-      setStep(0);
-      setFormData({});
-    } else {
-      alert("Failed to create event.");
+      if (response.status === 200 || response.status === 201) {
+        toast.success("Event created successfully!");
+        setStep(0);
+        setFormData({
+          ticketPrices: [{ seatType: "", price: 0, availableSeats: 0 }],
+        });
+      } else {
+        toast.error(response.data?.message || "Failed to create event.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        error.response?.data?.message || "Something went wrong during submission."
+      );
     }
   };
 
   const steps = [
-    <CreateEvent onNext={() => setStep(1)} data={formData} updateForm={updateForm} />,
+    <CreateEvent
+      onNext={() => setStep(1)}
+      data={formData}
+      updateForm={updateForm}
+    />,
     <EventDetail
       onNext={() => setStep(2)}
       onBack={() => setStep(0)}
@@ -57,12 +96,11 @@ const HostEventWrapper = () => {
       updateForm={updateForm}
     />,
     <EventTicket
-      onNext={() => setStep(4)}
       onBack={() => setStep(2)}
-      data={formData}
-      updateForm={updateForm}
+      data={{ ticketPrices: formData.ticketPrices }}
+      updateForm={(newTicketData) => updateForm(newTicketData)}
+      onSubmit={handleSubmit}
     />,
-    <EventSubmit onBack={() => setStep(3)} onSubmit={handleSubmit} />,
   ];
 
   return <div>{steps[step]}</div>;

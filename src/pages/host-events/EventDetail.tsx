@@ -14,10 +14,10 @@ const EventDetail = ({ onNext, onBack, data, updateForm }) => {
         <Input type="date" name="date" value={data.date || ""} onChange={handleChange} />
       </div>
 
-      <div>
+      {/* <div>
         <Label>Venue ID</Label>
         <Input name="venueId" value={data.venueId || ""} onChange={handleChange} />
-      </div>
+      </div> */}
 
       <div>
         <Label>Image</Label>
