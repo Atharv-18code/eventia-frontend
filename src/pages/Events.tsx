@@ -1,11 +1,13 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardFooter, CardHeader} from '@/components/ui/card';
+import {Event} from '@/constants/types';
 import {EventState, fetchPublicEvents} from '@/store/slices/eventSlice';
 import {AppDispatch} from '@/store/store';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import toast from 'react-hot-toast';
 import {useDispatch, useSelector} from 'react-redux';
 import {Link, useNavigate} from 'react-router-dom';
+import TicketBookingDialog from '@/components/user-dashboard/TicketBookingDialog';
 
 const Events = () => {
   const navigate = useNavigate();
@@ -13,15 +15,21 @@ const Events = () => {
   const {events, loading, error} = useSelector(
     (state: {event: EventState}) => state.event
   );
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     dispatch(fetchPublicEvents());
   }, [dispatch]);
 
-  const onBuyTicketsClick = (eventId: string) => {
-    localStorage.setItem('redirect', eventId.toString());
-    navigate(`/login`);
-    toast.error('Please login to buy tickets');
+  const onBuyTicketsClick = (event: Event) => {
+    const isAuthenticated = true; // TODO: Replace with actual auth check
+    if (!isAuthenticated) {
+      localStorage.setItem('redirect', event.id.toString());
+      navigate(`/login`);
+      toast.error('Please login to buy tickets');
+      return;
+    }
+    setSelectedEvent(event);
   }
 
   return (
@@ -69,7 +77,7 @@ const Events = () => {
                   variant='default'
                   size='lg'
                   className='w-full'
-                  onClick={() => onBuyTicketsClick(event.id)}
+                  onClick={() => onBuyTicketsClick(event)}
                 >
                   Buy Tickets
                 </Button>
@@ -77,6 +85,11 @@ const Events = () => {
             </Card>
           ))}
       </div>
+      <TicketBookingDialog
+        event={selectedEvent}
+        isOpen={selectedEvent !== null}
+        onClose={() => setSelectedEvent(null)}
+      />
     </div>
   );
 };

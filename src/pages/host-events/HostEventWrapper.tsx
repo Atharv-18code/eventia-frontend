@@ -3,6 +3,7 @@ import CreateEvent from "./CreateEvent";
 import EventDetail from "./EventDetail";
 import EventVisibility from "./EventVisibility";
 import EventTicket from "./EventTicket";
+import VenueSelect from "./VenueSelect";
 import toast from "react-hot-toast";
 import axiosInstance from "@/interceptors/AxiosInterceptor";
 
@@ -94,8 +95,14 @@ const HostEventWrapper = () => {
       data={formData}
       updateForm={updateForm}
     />,
-    <EventTicket
+    <VenueSelect
+      onNext={() => setStep(4)}
       onBack={() => setStep(2)}
+      data={{ venueId: formData.venueId }}
+      updateForm={updateForm}
+    />,
+    <EventTicket
+      onBack={() => setStep(3)}
       data={{ ticketPrices: formData.ticketPrices }}
       updateForm={(newTicketData) => updateForm(newTicketData)}
       onSubmit={handleSubmit}

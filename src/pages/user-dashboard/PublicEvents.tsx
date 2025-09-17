@@ -1,6 +1,7 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardFooter, CardHeader} from '@/components/ui/card';
 import TicketDialog from '@/components/user-dashboard/TicketDialog';
+import {Event} from '@/constants/types';
 import {EventState, fetchPublicEvents} from '@/store/slices/eventSlice';
 import {AppDispatch} from '@/store/store';
 import {Ticket} from 'lucide-react';
@@ -15,7 +16,7 @@ const PublicEvents = () => {
     dispatch(fetchPublicEvents());
   }, [dispatch]);
 
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   return (
     <div className='py-4 h-[calc(100vh-64px)]'>
@@ -46,19 +47,31 @@ const PublicEvents = () => {
                 </h3>
               </CardContent>
               <CardFooter>
-                <TicketDialog
-                  event={selectedEvent}
-                  hidden={true}
-                  isOpen={selectedEvent?.id === event.id}
-                  onClose={() => setSelectedEvent(null)}
-                />
-                <Button
-                  className='w-full'
+                {selectedEvent && (
+                  <TicketDialog
+                    event={selectedEvent}
+                    hidden={true}
+                    isOpen={selectedEvent.id === event.id}
+                    onClose={() => setSelectedEvent(null)}
+                  />
+                )}
+                {/* <Button
+                  className='w-full flex items-center gap-2'
                   onClick={() => setSelectedEvent(event)}
                 >
-                  <Ticket />
+                  <Ticket className="h-4 w-4" />
                   Buy Tickets
-                </Button>
+                </Button> */}
+
+                <div className='w-full flex justify-center'>
+                  <Button
+                    className='w-full flex items-center gap-2'
+                    onClick={() => console.log("heyy")}
+                  >
+                    <Ticket className="h-4 w-4" />
+                    Buy Tickets
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
           ))}
