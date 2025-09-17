@@ -1,6 +1,6 @@
 import {Button} from '@/components/ui/button';
 import {Card, CardContent, CardFooter, CardHeader} from '@/components/ui/card';
-import {Event} from '@/constants/types';
+import {Event, User} from '@/constants/types';
 import {EventState, fetchPublicEvents} from '@/store/slices/eventSlice';
 import {AppDispatch} from '@/store/store';
 import {useEffect, useState} from 'react';
@@ -15,6 +15,7 @@ const Events = () => {
   const {events, loading, error} = useSelector(
     (state: {event: EventState}) => state.event
   );
+  const user = useSelector((state: {auth: {user: User}}) => state.auth.user);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
   useEffect(() => {
@@ -22,8 +23,7 @@ const Events = () => {
   }, [dispatch]);
 
   const onBuyTicketsClick = (event: Event) => {
-    const isAuthenticated = true; // TODO: Replace with actual auth check
-    if (!isAuthenticated) {
+    if (!user) {
       localStorage.setItem('redirect', event.id.toString());
       navigate(`/login`);
       toast.error('Please login to buy tickets');
@@ -85,11 +85,13 @@ const Events = () => {
             </Card>
           ))}
       </div>
-      <TicketBookingDialog
-        event={selectedEvent}
-        isOpen={selectedEvent !== null}
-        onClose={() => setSelectedEvent(null)}
-      />
+      {user && selectedEvent && (
+        <TicketBookingDialog
+          event={selectedEvent}
+          isOpen={selectedEvent !== null}
+          onClose={() => setSelectedEvent(null)}
+        />
+      )}
     </div>
   );
 };
